@@ -1,0 +1,45 @@
+---
+title: pluggy
+description: A single-binary CLI for Minecraft plugin development.
+template: splash
+hero:
+  tagline: From empty directory to a running Paper server in minutes. No JDK setup, no build-system rabbit hole.
+  actions:
+    - text: Get started
+      link: /docs/latest/getting-started/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/pluggy-sh/pluggy
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid, Tabs, TabItem, Code } from "@astrojs/starlight/components";
+
+## Install
+
+<Tabs syncKey="os">
+  <TabItem label="macOS / Linux" icon="apple">
+    <Code code="curl -fsSL https://pluggy.sh/install.sh | sh" lang="sh" />
+  </TabItem>
+  <TabItem label="Windows" icon="seti:windows">
+    <Code code="irm https://pluggy.sh/install.ps1 | iex" lang="powershell" />
+  </TabItem>
+</Tabs>
+
+## What it does
+
+<CardGrid stagger>
+  <Card title="Scaffolds projects" icon="rocket">
+    `pluggy init` creates a new plugin in seconds. Pick a platform — Paper, Folia, Spigot, Velocity — and go.
+  </Card>
+  <Card title="Resolves dependencies" icon="puzzle">
+    Pulls from Modrinth and Maven. No more hand-editing `pom.xml` or `build.gradle.kts`.
+  </Card>
+  <Card title="Live dev server" icon="laptop">
+    `pluggy dev` runs your plugin against a local server with hot reload on save.
+  </Card>
+  <Card title="Single binary" icon="download">
+    No JDK, no Gradle, no Maven. One executable on your PATH.
+  </Card>
+</CardGrid>

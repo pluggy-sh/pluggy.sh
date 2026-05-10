@@ -1,0 +1,23 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# generated docs (synced from pluggy git tags by scripts/sync-docs.ts)
+src/content/docs/v*/
+src/content/docs/latest/
+.cache/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env / editor
+.env
+.env.production
+.DS_Store
+.vscode/
+.idea/

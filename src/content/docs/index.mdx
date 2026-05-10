@@ -1,9 +1,10 @@
 ---
 title: pluggy
-description: A single-binary CLI for Minecraft plugin development.
+description: The Minecraft plugin toolchain. Build a Minecraft plugin without setting up Java.
 template: splash
 hero:
-  tagline: From empty directory to a running Paper server in minutes. No JDK setup, no build-system rabbit hole.
+  title: The Minecraft plugin toolchain.
+  tagline: Build a Minecraft plugin without setting up Java.
   actions:
     - text: Get started
       link: /latest/getting-started/
@@ -16,30 +17,55 @@ hero:
 
 import { Card, CardGrid, Tabs, TabItem, Code } from "@astrojs/starlight/components";
 
+```sh
+curl -fsSL https://pluggy.sh/install.sh | sh
+pluggy init my-plugin
+cd my-plugin && pluggy dev
+```
+
+Pluggy installs the JDK, resolves dependencies, builds your plugin, and runs a live dev server. Useful from your first plugin to your hundredth.
+
+## What pluggy does
+
+<CardGrid stagger>
+  <Card title="Provisions JDKs" icon="rocket">
+    `pluggy init` and `pluggy build` install the right Temurin JDK for your Minecraft version. You never set `JAVA_HOME` yourself.
+  </Card>
+  <Card title="Resolves dependencies" icon="puzzle">
+    `pluggy install <name>` pulls from Modrinth and Maven. A `pluggy.lock` records exact versions so every machine builds the same jar.
+  </Card>
+  <Card title="Runs a live dev server" icon="laptop">
+    `pluggy dev` starts a local Paper, Folia, Velocity, or Sponge server and reloads your plugin on every save.
+  </Card>
+  <Card title="Generates IDE files" icon="document">
+    Open the project in IntelliJ, VS Code, or Eclipse. The `.classpath` is written on every build. No import wizard.
+  </Card>
+  <Card title="Builds for every platform" icon="approve-check">
+    One `project.json` targets Paper, Folia, Spigot, Bukkit, Velocity, BungeeCord, Waterfall, and Sponge.
+  </Card>
+  <Card title="Ships as one binary" icon="download">
+    Install pluggy with `curl`, `brew`, or `scoop`. No JDK, Maven, or Gradle required to run pluggy itself.
+  </Card>
+</CardGrid>
+
+## Why pluggy exists
+
+Building a Minecraft plugin still requires installing a JDK, picking a build tool, configuring Maven or Gradle, and importing the result into an IDE. For a newcomer that is a weekend before any code runs. For an experienced developer it is recurring tax on every new project.
+
+Pluggy collapses every step into a single binary. You run `pluggy init` and `pluggy dev`, and your plugin compiles, loads, and reloads while you write code.
+
 ## Install
 
 <Tabs syncKey="os">
   <TabItem label="macOS / Linux" icon="apple">
     <Code code="curl -fsSL https://pluggy.sh/install.sh | sh" lang="sh" />
   </TabItem>
+  <TabItem label="Homebrew">
+    <Code code="brew install pluggy-sh/tap/pluggy" lang="sh" />
+  </TabItem>
   <TabItem label="Windows" icon="seti:windows">
     <Code code="irm https://pluggy.sh/install.ps1 | iex" lang="powershell" />
   </TabItem>
 </Tabs>
 
-## What it does
-
-<CardGrid stagger>
-  <Card title="Scaffolds projects" icon="rocket">
-    `pluggy init` creates a new plugin in seconds. Pick a platform — Paper, Folia, Spigot, Velocity — and go.
-  </Card>
-  <Card title="Resolves dependencies" icon="puzzle">
-    Pulls from Modrinth and Maven. No more hand-editing `pom.xml` or `build.gradle.kts`.
-  </Card>
-  <Card title="Live dev server" icon="laptop">
-    `pluggy dev` runs your plugin against a local server with hot reload on save.
-  </Card>
-  <Card title="Single binary" icon="download">
-    No JDK, no Gradle, no Maven. One executable on your PATH.
-  </Card>
-</CardGrid>
+After install, `pluggy doctor` reports your install method and any environment issues. Then head to [Getting started](/latest/getting-started/).

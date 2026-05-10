@@ -1,3 +1,4 @@
+import sitemap from "@astrojs/sitemap";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import { versions } from "./versions.config.ts";
@@ -63,12 +64,19 @@ function sidebarFor(slug: string) {
   ];
 }
 
+const SITE_URL = "https://pluggy.sh";
+const OG_IMAGE = `${SITE_URL}/og.png`;
+
 export default defineConfig({
-  site: "https://pluggy.sh",
+  site: SITE_URL,
+  trailingSlash: "always",
   redirects: {
     "/docs": `/${defaultVersion.slug}/getting-started`,
   },
   integrations: [
+    sitemap({
+      filter: (page) => !page.includes("/404"),
+    }),
     starlight({
       title: "pluggy",
       description: "A command-line tool for Minecraft plugin development.",
@@ -83,6 +91,31 @@ export default defineConfig({
       },
       sidebar: sidebarFor(defaultVersion.slug),
       customCss: ["./src/styles/custom.css"],
+      head: [
+        { tag: "meta", attrs: { name: "theme-color", content: "#0b0b0f" } },
+        { tag: "meta", attrs: { property: "og:type", content: "website" } },
+        { tag: "meta", attrs: { property: "og:site_name", content: "pluggy" } },
+        { tag: "meta", attrs: { property: "og:image", content: OG_IMAGE } },
+        { tag: "meta", attrs: { property: "og:image:width", content: "1200" } },
+        { tag: "meta", attrs: { property: "og:image:height", content: "630" } },
+        { tag: "meta", attrs: { name: "twitter:card", content: "summary_large_image" } },
+        { tag: "meta", attrs: { name: "twitter:image", content: OG_IMAGE } },
+        {
+          tag: "script",
+          attrs: { type: "application/ld+json" },
+          content: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "pluggy",
+            description:
+              "A single-binary CLI for Minecraft plugin development. Scaffold, build, and run Paper/Folia/Spigot/Velocity plugins without managing a JDK or build tool.",
+            url: SITE_URL,
+            applicationCategory: "DeveloperApplication",
+            operatingSystem: "macOS, Linux, Windows",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+          }),
+        },
+      ],
     }),
   ],
 });

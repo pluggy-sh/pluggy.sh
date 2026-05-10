@@ -59,8 +59,12 @@ async function transform(srcRoot: string, slug: string) {
     const raw = await readFile(file, "utf8");
     const fileSlug = rel.replace(/\.md$/, "").replace(/\\/g, "/");
     const baseName = fileSlug.split("/").pop()!;
-    const fallback = baseName === "README" ? "Overview" : baseName.replace(/-/g, " ");
-    const title = extractTitle(raw, fallback);
+    // README pages become section overviews; their upstream H1 is usually
+    // a generic "<repo> docs" that doesn't read well as a sidebar entry.
+    const title =
+      baseName === "README"
+        ? "Overview"
+        : extractTitle(raw, baseName.replace(/-/g, " "));
 
     const outRel = rel === "README.md" || rel.endsWith("/README.md")
       ? rel.replace(/README\.md$/, "index.md")

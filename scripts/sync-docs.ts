@@ -42,6 +42,44 @@ function stripFirstH1(body: string): string {
   return body.replace(TITLE_RE, "").replace(/^\n+/, "");
 }
 
+function extractDescription(body: string): string | null {
+  const lines = stripFirstH1(body).split("\n");
+  const para: string[] = [];
+  let inFence = false;
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    if (line.startsWith("```")) {
+      inFence = !inFence;
+      if (para.length) break;
+      continue;
+    }
+    if (inFence) continue;
+    const trimmed = line.trim();
+    if (!trimmed) {
+      if (para.length) break;
+      continue;
+    }
+    if (/^(#{1,6}\s|[-*+]\s|\d+\.\s|>|\||<)/.test(trimmed)) {
+      if (para.length) break;
+      continue;
+    }
+    para.push(trimmed);
+  }
+  if (!para.length) return null;
+  let text = para
+    .join(" ")
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1")
+    .replace(/_([^_]+)_/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (text.length > 160) text = `${text.slice(0, 157).trimEnd()}...`;
+  return text || null;
+}
+
 function rewriteLinks(body: string): string {
   // Strip the .md extension from in-repo links so Starlight resolves them as routes.
   return body.replace(/(\]\([^)]+?)\.md(#[^)]*)?\)/g, "$1$2)");
@@ -73,7 +111,10 @@ async function transform(srcRoot: string, slug: string) {
     await mkdir(dirname(outPath), { recursive: true });
 
     const body = rewriteLinks(stripFirstH1(raw));
-    const frontmatter = `---\ntitle: ${JSON.stringify(title)}\n---\n\n`;
+    const description = extractDescription(raw);
+    const fmLines = [`title: ${JSON.stringify(title)}`];
+    if (description) fmLines.push(`description: ${JSON.stringify(description)}`);
+    const frontmatter = `---\n${fmLines.join("\n")}\n---\n\n`;
     await writeFile(outPath, frontmatter + body);
   }
 }

@@ -25,7 +25,7 @@ export default defineConfig({
       sidebar: versions.map((v) => ({
         label: v.label,
         collapsed: !v.default,
-        autogenerate: { directory: `docs/${v.slug}` },
+        autogenerate: { directory: v.slug },
       })),
       customCss: ["./src/styles/custom.css"],
     }),

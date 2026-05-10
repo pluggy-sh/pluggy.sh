@@ -40,8 +40,8 @@ function stripFirstH1(body: string): string {
 }
 
 function rewriteLinks(body: string): string {
-  // Strip leading ./ and trailing .md from relative links so Starlight resolves them as routes.
-  return body.replace(/\]\((\.?\/?[^)]+?)\.md(#[^)]+)?\)/g, "](./$1$2)");
+  // Strip the .md extension from in-repo links so Starlight resolves them as routes.
+  return body.replace(/(\]\([^)]+?)\.md(#[^)]*)?\)/g, "$1$2)");
 }
 
 async function transform(srcRoot: string, slug: string) {

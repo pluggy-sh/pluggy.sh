@@ -10,7 +10,9 @@ export type DocsVersion = {
 };
 
 export const versions: DocsVersion[] = [
-  { slug: "latest", label: "Latest", tag: "v0.4.1", default: true },
+  // tag: "@latest" resolves to the most recent GitHub release at build time.
+  // Pin a literal tag (e.g. "v0.4.1") to freeze a version in place.
+  { slug: "latest", label: "Latest", tag: "@latest", default: true },
 ];
 
 export const upstream = {

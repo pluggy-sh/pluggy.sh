@@ -9,6 +9,25 @@ const ROOT = new URL("..", import.meta.url).pathname;
 const CACHE = join(ROOT, ".cache", "tags");
 const OUT = join(ROOT, "src", "content", "docs");
 
+/**
+ * Resolves "@latest" to the actual tag name of the most recent GitHub release,
+ * so versions.config.ts can leave the moving "latest" entry self-updating
+ * instead of needing a manual bump after every release.
+ */
+async function resolveTag(tag: string): Promise<string> {
+  if (tag !== "@latest") return tag;
+  const url = `https://api.github.com/repos/${upstream.owner}/${upstream.repo}/releases/latest`;
+  const headers: Record<string, string> = { Accept: "application/vnd.github+json" };
+  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  const res = await fetch(url, { headers });
+  if (!res.ok) {
+    throw new Error(`failed to resolve @latest: ${res.status} ${res.statusText} from ${url}`);
+  }
+  const data = (await res.json()) as { tag_name?: string };
+  if (!data.tag_name) throw new Error(`@latest response missing tag_name: ${JSON.stringify(data)}`);
+  return data.tag_name;
+}
+
 async function fetchTag(tag: string): Promise<string> {
   const dest = join(CACHE, tag);
   if (existsSync(join(dest, upstream.docsPath))) return dest;
@@ -123,9 +142,11 @@ const start = Date.now();
 console.log(`Syncing docs for ${versions.length} versions...`);
 
 for (const v of versions) {
-  const cached = await fetchTag(v.tag);
+  const resolved = await resolveTag(v.tag);
+  const cached = await fetchTag(resolved);
   await transform(cached, v.slug);
-  console.log(`  ${v.slug.padEnd(8)} <- ${upstream.owner}/${upstream.repo}@${v.tag}`);
+  const suffix = v.tag === resolved ? "" : ` (resolved from ${v.tag})`;
+  console.log(`  ${v.slug.padEnd(8)} <- ${upstream.owner}/${upstream.repo}@${resolved}${suffix}`);
 }
 
 console.log(`Done in ${((Date.now() - start) / 1000).toFixed(1)}s.`);

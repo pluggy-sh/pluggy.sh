@@ -92,6 +92,14 @@ export default defineConfig({
       sidebar: sidebarFor(defaultVersion.slug),
       customCss: ["./src/styles/custom.css"],
       head: [
+        {
+          tag: "link",
+          attrs: {
+            rel: "apple-touch-icon",
+            sizes: "180x180",
+            href: "/apple-touch-icon.png",
+          },
+        },
         { tag: "meta", attrs: { name: "theme-color", content: "#0b0b0f" } },
         { tag: "meta", attrs: { property: "og:type", content: "website" } },
         { tag: "meta", attrs: { property: "og:site_name", content: "pluggy" } },

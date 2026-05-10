@@ -56,3 +56,41 @@ const composed = await sharp(bgBuf)
 if (!existsSync(OUT_DIR)) await mkdir(OUT_DIR, { recursive: true });
 await writeFile(OUT, composed);
 console.log(`Wrote ${OUT} (${W}x${H})`);
+
+// apple-touch-icon: iOS doesn't support SVG favicons, and transparent PNGs
+// look bad on the home screen. Render the brand glyph on the brand background.
+const APPLE_SIZE = 180;
+const APPLE_OUT = join(OUT_DIR, "apple-touch-icon.png");
+const FAVICON_SVG = join(OUT_DIR, "favicon.svg");
+const faviconRaw = await readFile(FAVICON_SVG, "utf8");
+// Force the white-glyph variant — the adaptive media query doesn't apply
+// when the SVG is rasterized headlessly by sharp.
+const glyphSvg = faviconRaw
+  .replace(/<style>[\s\S]*?<\/style>/, "")
+  .replace(/<path /, '<path fill="#ffffff" ');
+const glyphBuf = await sharp(Buffer.from(glyphSvg))
+  .resize({ width: Math.round(APPLE_SIZE * 0.7) })
+  .png()
+  .toBuffer();
+const glyphMeta = await sharp(glyphBuf).metadata();
+const glyphW = glyphMeta.width ?? 0;
+const glyphH = glyphMeta.height ?? 0;
+const apple = await sharp({
+  create: {
+    width: APPLE_SIZE,
+    height: APPLE_SIZE,
+    channels: 4,
+    background: BG,
+  },
+})
+  .composite([
+    {
+      input: glyphBuf,
+      left: Math.round((APPLE_SIZE - glyphW) / 2),
+      top: Math.round((APPLE_SIZE - glyphH) / 2),
+    },
+  ])
+  .png()
+  .toBuffer();
+await writeFile(APPLE_OUT, apple);
+console.log(`Wrote ${APPLE_OUT} (${APPLE_SIZE}x${APPLE_SIZE})`);

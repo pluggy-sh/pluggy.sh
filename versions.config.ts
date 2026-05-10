@@ -10,9 +10,7 @@ export type DocsVersion = {
 };
 
 export const versions: DocsVersion[] = [
-  { slug: "latest", label: "Latest (v0.3)", tag: "v0.3.0", default: true },
-  { slug: "v0-3", label: "v0.3", tag: "v0.3.0" },
-  { slug: "v0-2", label: "v0.2", tag: "v0.2.3" },
+  { slug: "latest", label: "Latest", tag: "v0.3.0", default: true },
 ];
 
 export const upstream = {

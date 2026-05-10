@@ -32,7 +32,10 @@ async function* walk(dir: string): AsyncIterable<string> {
 const TITLE_RE = /^#\s+(.+?)\s*$/m;
 
 function extractTitle(body: string, fallback: string): string {
-  return body.match(TITLE_RE)?.[1] ?? fallback;
+  const raw = body.match(TITLE_RE)?.[1] ?? fallback;
+  // Strip backticks so command titles like `pluggy audit` don't render as
+  // literal backtick characters in the sidebar / page header.
+  return raw.replace(/`/g, "");
 }
 
 function stripFirstH1(body: string): string {
